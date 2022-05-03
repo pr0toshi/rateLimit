@@ -87,7 +87,7 @@ contract rateLimit {
     mapping(address => uint256) public rate; //tracks amount sent for the last timeLimit time
     mapping(address => uint256) public timestamp; //tracks most recent send
     uint256 public timeLimit = 3600; //how long in seconds to limit within, recommend 1h = 3600
-    uint16 public rateLimit = 100; //the basis points (00.x%) to allow as the max sent within the last timeLimit time
+    uint16 public rateLimit = 1000; //the basis points (00.0x%) to allow as the max sent within the last timeLimit time
 
     //updates the time as well as the relative amount in basis points to track and rate limit outflows in which to track
     //_rateLimit = 00.x%, _timeLimit = time in seconds
@@ -116,13 +116,13 @@ contract rateLimit {
                     rate[token] -=
                         (address(this).balance * rateLimit) /
                         (timeLimit / (block.timestamp - timestamp[token])) /
-                        1000;
+                        10000;
                 }
             }
             //increases the tracked rate for the current time window by the amount sent out
             rate[token] += amount;
             //revert if the outflow exceeds rate limit
-            require(rate[token] <= (rateLimit * address(this).balance) / 1000);
+            require(rate[token] <= (rateLimit * address(this).balance) / 10000);
             //sets the current time as the last transfer for the token
             timestamp[token] = block.timestamp;
             //transfers out
@@ -140,7 +140,7 @@ contract rateLimit {
                     rate[token] -=
                         (IERC20(token).balanceOf(address(this)) * rateLimit) /
                         (timeLimit / (block.timestamp - timestamp[token])) /
-                        1000;
+                        10000;
                 }
                 //increases the tracked rate for the current time window by the amount sent out
                 rate[token] += amount;
@@ -148,7 +148,7 @@ contract rateLimit {
                 require(
                     rate[token] <=
                         (rateLimit * IERC20(token).balanceOf(address(this))) /
-                            1000
+                            10000
                 );
                 //sets the current time as the last transfer for the token
                 timestamp[token] = block.timestamp;
