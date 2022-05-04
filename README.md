@@ -60,3 +60,6 @@ function withdrawToken(
 For a version with optional whitelist enabled for addresses to not be rate limited use rateLimitWhitelist.sol.
 
 **Set authAddress in constructor or in an init fn!**
+
+authAddress - Used to whitelist addresses to not be rate limited
+whitelisted[address] - Used to allow addresses as msg.senders to not be rate limited for the transfer. Use with caution. uint8 to allow for updates later to allow for dynamic limits and limits based on address.
