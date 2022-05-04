@@ -25,10 +25,6 @@ uint256[] public amountsETH;
 uint256[] public amountsToken;
 IERC20 public Token;
 
-## Whitelist
-For a version with optional whitelist enabled for addresses to not be rate limited use rateLimitWhitelist.sol.
-**Set authAddress in constructor or in an init fn!**
-
 constructor(uint16 _rateLimit, uint256 _timeLimit) {
         updateLimits(_rateLimit, _timeLimit);
     }
@@ -59,3 +55,7 @@ function withdrawToken(
 
 }
 ```
+
+## Whitelist
+For a version with optional whitelist enabled for addresses to not be rate limited use rateLimitWhitelist.sol.
+**Set authAddress in constructor or in an init fn!**
