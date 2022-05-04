@@ -53,3 +53,5 @@ function withdrawToken(
 
 }
 ```
+# Motivation
+This contract was designed to stop single transactions or small bursts to steal funds from contracts through hacks. By changing all public withdraw and transfer fns to a simple new fn that tracks outflow rates, hacks can be limited in severity giving teams the time to freeze contract outflows and upgrade.
