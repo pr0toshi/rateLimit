@@ -84,8 +84,12 @@ interface IERC20 {
 }
 
 contract rateLimit {
-    mapping(address => uint256) public rate; //tracks amount sent for the last timeLimit time
-    mapping(address => uint256) public timestamp; //tracks most recent send
+    mapping(address => TokenInfo) public infoL;
+
+    struct TokenInfo {
+        uint32 timestamp; //tracks most recent send
+        uint224 rate; //tracks amount sent for the last timeLimit time
+    }
     uint256 public timeLimit = 3600; //how long in seconds to limit within, recommend 1h = 3600
     uint16 public rateLimit = 1000; //the basis points (00.0x%) to allow as the max sent within the last timeLimit time
 
@@ -102,29 +106,31 @@ contract rateLimit {
         address to,
         uint256 amount,
         address token
-    ) internal {
+    ) public {
+        TokenInfo storage info = infoL[token];
         //used if the asset is ETH and not an ERC20 token
         if (address(token) == address(0)) {
             //used to get around solidity 0.8 reverts
             unchecked {
                 //checks to see if the last transaction was outside the time window to track outflow for limiting
-                if (timeLimit <= block.timestamp - timestamp[token]) {
-                    rate[token] = 0;
+                if (timeLimit <= block.timestamp - info.timestamp) {
+                    info.rate = 0;
                 }
                 //if the last transaction was within the time window, decreases the tracked outflow rate relative to the time elapsed, so that the limit is able to update in realtime rather than in blocks, making flows smooth, and increasing the rate available as time increases without a transaction
                 else {
-                    rate[token] -=
+                    info.rate -= uint224(
                         (address(this).balance * rateLimit) /
-                        (timeLimit / (block.timestamp - timestamp[token])) /
-                        10000;
+                            (timeLimit / (block.timestamp - info.timestamp)) /
+                            10000
+                    );
                 }
             }
             //increases the tracked rate for the current time window by the amount sent out
-            rate[token] += amount;
+            info.rate += uint224(amount);
             //revert if the outflow exceeds rate limit
-            require(rate[token] <= (rateLimit * address(this).balance) / 10000);
+            require(info.rate <= (rateLimit * address(this).balance) / 10000);
             //sets the current time as the last transfer for the token
-            timestamp[token] = block.timestamp;
+            info.timestamp = uint32(block.timestamp);
             //transfers out
             payable(to).transfer(amount);
             //if the token is a ERC20 token
@@ -132,26 +138,27 @@ contract rateLimit {
             //used to get around solidity 0.8 reverts
             unchecked {
                 //checks to see if the last transaction was outside the time window to track outflow for limiting
-                if (timeLimit <= block.timestamp - timestamp[token]) {
-                    rate[token] = 0;
+                if (timeLimit <= block.timestamp - info.timestamp) {
+                    info.rate = 0;
                 }
                 //if the last transaction was within the time window, decreases the tracked outflow rate relative to the time elapsed, so that the limit is able to update in realtime rather than in blocks, making flows smooth, and increasing the rate available as time increases without a transaction
                 else {
-                    rate[token] -=
+                    info.rate -= uint224(
                         (IERC20(token).balanceOf(address(this)) * rateLimit) /
-                        (timeLimit / (block.timestamp - timestamp[token])) /
-                        10000;
+                            (timeLimit / (block.timestamp - info.timestamp)) /
+                            10000
+                    );
                 }
                 //increases the tracked rate for the current time window by the amount sent out
-                rate[token] += amount;
+                info.rate += uint224(amount);
                 //revert if the outflow exceeds rate limit
                 require(
-                    rate[token] <=
+                    info.rate <=
                         (rateLimit * IERC20(token).balanceOf(address(this))) /
                             10000
                 );
                 //sets the current time as the last transfer for the token
-                timestamp[token] = block.timestamp;
+                info.timestamp = uint32(block.timestamp);
                 //transfers out
                 IERC20(token).transfer(to, amount);
             }
