@@ -58,4 +58,5 @@ function withdrawToken(
 
 ## Whitelist
 For a version with optional whitelist enabled for addresses to not be rate limited use rateLimitWhitelist.sol.
+
 **Set authAddress in constructor or in an init fn!**
