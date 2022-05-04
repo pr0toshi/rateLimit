@@ -65,7 +65,7 @@ authAddress - Used to whitelist addresses to not be rate limited
 whitelisted[address] - Used to allow addresses as msg.senders to not be rate limited for the transfer. Use with caution. uint8 to allow for updates later to allow for dynamic limits and limits based on address.
 
 ## Benchmarks
-rateLimit benchmarks for gas consumption
+### rateLimit benchmarks for gas consumption
 gas price gwei // token type // rateLimit or noLimit
 
 44k ETH rL
