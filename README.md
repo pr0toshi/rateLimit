@@ -62,5 +62,30 @@ For a version with optional whitelist enabled for addresses to not be rate limit
 **Set authAddress in constructor or in an init fn!**
 
 authAddress - Used to whitelist addresses to not be rate limited
-
 whitelisted[address] - Used to allow addresses as msg.senders to not be rate limited for the transfer. Use with caution. uint8 to allow for updates later to allow for dynamic limits and limits based on address.
+
+## Benchmarks
+# rateLimit benchmarks for gas consumption
+gas price gwei // token type // rateLimit or noLimit
+
+44k ETH rL
+
+32k ETH N
+
+53k token rL
+
+39.4k token N
+
+Delta 12-13k
+
+---
+
+@100 gwei
+gas price premium per use
+
+0.000082 ETH
+
+$0.24
+
+
+Would you pay $0.24 to save $72,000,000?
