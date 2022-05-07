@@ -1,4 +1,6 @@
 # rateLimit
+## An EIP 5075 implementation resource
+
 Limits asset outflows from contracts within customisable timeframes.
 rateLimit = amount in basis points relative to totalasseets in the contract for that token type to allow to leave the contract within t timeLimit.
 timeLimit = time in seconds to use as the window in which to track outflows to limit within. 3600 restricts outflows to 00.01% * rateLimit within the last 1 hour.
@@ -11,7 +13,7 @@ Simply import, inherit and swap publicly accessible transfer fns (both ETH and t
 
 You can also set the timeframe in which to track outflows and the % limit on the outflows relative to total balance with the updateLimits fn which takes the rateLimit as a uint16 (1 = 00.01% // 100 = 01% // basis points) and the timeLimit which is the previous n seconds (3600=1 hour) used to limit and track outflows within
 
-## Sample Contract
+# Sample Contract
 
 ```
 pragma solidity ^0.8;
@@ -56,7 +58,7 @@ function withdrawToken(
 }
 ```
 
-## Whitelist
+# Whitelist
 For a version with optional whitelist enabled for addresses to not be rate limited use rateLimitWhitelist.sol.
 
 **Set authAddress in constructor or in an init fn!**
@@ -64,7 +66,7 @@ For a version with optional whitelist enabled for addresses to not be rate limit
 authAddress - Used to whitelist addresses to not be rate limited
 whitelisted[address] - Used to allow addresses as msg.senders to not be rate limited for the transfer. Use with caution. uint8 to allow for updates later to allow for dynamic limits and limits based on address.
 
-## Benchmarks
+# Benchmarks
 ### rateLimit benchmarks for gas consumption
 gas price gwei // token type // rateLimit or noLimit
 
